@@ -617,3 +617,4 @@ obj-$(CONFIG_MFD_MAX8957) += max8957_gpio.o
 obj-y += display/
 obj-$(CONFIG_MACH_PRIMOTD) += board-primotd-gps.o
 obj-$(CONFIG_HTC_ACCESSORY_ONEWIRE) += htc_onewire.o
+obj-$(CONFIG_HAS_MACH_MEMUTILS) += memutils/
