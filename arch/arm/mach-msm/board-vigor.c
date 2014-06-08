@@ -1421,14 +1421,14 @@ static uint32_t usb_uart_switch_table[] = {
 static int vigor_phy_init_seq[] = { 0x06, 0x36, 0x0C, 0x31, 0x31, 0x32, 0x1, 0x0D, 0x1, 0x10, -1 };
 static struct msm_otg_platform_data msm_otg_pdata = {
 	.phy_init_seq		= vigor_phy_init_seq,
-	.mode			= USB_PERIPHERAL,
+	.mode			= USB_OTG,
 	.otg_control		= OTG_PMIC_CONTROL,
 	.phy_type		= CI_45NM_INTEGRATED_PHY,
 	.vbus_power		= msm_hsusb_vbus_power,
 	.power_budget		= 750,
-	.ldo_3v3_name	= "8058_l6",
-	.ldo_1v8_name	= "8058_l7",
-	.vddcx_name	= "8058_s1",
+	.ldo_3v3_name           = "8058_l6",
+	.ldo_1v8_name           = "8058_l7",
+	.vddcx_name             = "8058_s1",
 };
 
 #ifdef CONFIG_USB_GADGET_MSM_72K
@@ -6127,6 +6127,7 @@ static void __init msm8x60_init_buses(void)
 #endif
 
 #if defined(CONFIG_USB_GADGET_MSM_72K) || defined(CONFIG_USB_EHCI_HCD)
+        msm_otg_pdata.swfi_latency = msm_rpmrs_levels[0].latency_us;
 	/*
 	 * We can not put USB regulators (8058_l6 and 8058_l7) in LPM
 	 * when we depend on USB PHY for VBUS/ID notifications. VBUS
@@ -7507,18 +7508,17 @@ static struct platform_device *vigor_devices[] __initdata = {
 	&msm_device_ssbi3,
 #endif
 #if defined(CONFIG_USB_PEHCI_HCD) || defined(CONFIG_USB_PEHCI_HCD_MODULE)
-	&isp1763_device,
+        &isp1763_device,
 #endif
 
-#if defined (CONFIG_MSM_8x60_VOIP)
-	&asoc_msm_mvs,
-	&asoc_mvs_dai0,
-	&asoc_mvs_dai1,
+#if defined(CONFIG_MSM_8x60_VOIP)
+        &asoc_msm_mvs,
+        &asoc_mvs_dai0,
+        &asoc_mvs_dai1,
 #endif
 
-#if defined(CONFIG_USB_GADGET_MSM_72K) || defined(CONFIG_USB_EHCI_HCD)
-	&msm_device_otg,
-#endif
+        &msm_device_otg,
+        &msm_device_hsusb_host,
 #ifdef CONFIG_BATTERY_MSM
 	&msm_batt_device,
 #endif
