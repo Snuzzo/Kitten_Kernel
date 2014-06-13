@@ -601,7 +601,7 @@ config HID_WIIMOTE
         depends on BT_HIDP
         depends on LEDS_CLASS
         ---help---
-          Support for the Nintendo Wii Remote bluetooth device.
+        Support for the Nintendo Wii Remote bluetooth device.
 
 config HID_ZEROPLUS
 	tristate "Zeroplus based game controller support"
