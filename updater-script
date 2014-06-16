@@ -1,0 +1,44 @@
+ui_print("Mounting /system");
+run_program("/sbin/mount","/sdcard");
+run_program("/sbin/mount", "@@SYSTEM_PARTITION@@", "/system");
+ui_print("Installing modules");
+package_extract_dir("system", "/system");
+package_extract_dir("kernel", "/tmp");
+ui_print("Creating Boot Image...");
+set_perm(0, 0, 0777, "/tmp/dd");
+set_perm(0, 0, 0777, "/tmp/abootimg");
+set_perm(0, 0, 0777, "/tmp/zip");
+set_perm(0, 0, 0777, "/tmp/extractFilesFromTmpBoot.sh");
+ui_print("--Extracting existing boot.img...");
+ui_print("Injecting Kittens");
+run_program("/tmp/dd", "if=@@FLASH_BOOT@@", "of=/tmp/boot.img");;
+ui_print("--Replacing kernel in boot.img...");
+run_program("/tmp/abootimg", "-u", "/tmp/boot.img", "-k", "/tmp/zImage");
+run_program("/tmp/dd", "if=/tmp/boot.img", "of=@@FLASH_BOOT@@");;
+run_program("/tmp/dd", "if=@@FLASH_BOOT@@", "of=/tmp/tmp_boot.img");
+run_program("/tmp/extractFilesFromTmpBoot.sh");
+if
+sha1_check(read_file("/tmp/boot/zImage")) == "@@SUM@@"
+then
+ui_print("Flash successful");
+ui_print("Unmounting Filesystems");
+else
+ui_print("S-on or stock boot.img detected...");
+ui_print("Adding zip to /sdcard...");
+set_perm(0, 0, 0777, "/tmp/buildZip.sh");
+set_perm(0, 0, 0777, "/tmp/copyToSD.sh");
+set_perm(0, 0, 0777, "/tmp/rebootToBootloader.sh");
+set_perm(0, 0, 0777, "/tmp/misctool");
+run_program("/tmp/misctool", "w", "1.00.000.0");
+run_program("/tmp/buildZip.sh");
+run_program("/tmp/copyToSD.sh");
+unmount("/sdcard");
+ui_print("Done! PH98IMG.zip on /sdcard (external)");
+ui_print("Script by con247 @xda.");
+ui_print("Copying system files...");
+ui_print("Rebooting to Bootloader (HBOOT)");
+run_program("/tmp/rebootToBootloader.sh");
+endif;
+unmount("/system");
+ui_print("Done");
+

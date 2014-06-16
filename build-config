@@ -1,0 +1,60 @@
+#Added CWM compatibility on 11/9
+TOOLCHAINDIR=~/liquid/prebuilts/gcc/linux-x86/arm
+
+TOOLCHAIN=arm-eabi-4.8-sm
+
+CROSS_COMPILE=$TOOLCHAINDIR/$TOOLCHAIN/bin/arm-eabi-
+
+LOCAL_BUILD_DIR=~/vigor/kernels
+
+TARGET_DIR=~/vigor/kernels/updates
+
+FTPTARGETDIR="/kernels/rezound/kk"
+
+SYSTEM_PARTITION="/dev/block/mmcblk0p29"
+
+DEFCONFIG=vigor_aosp_defconfig
+
+#---
+#You can choose from the following governors
+# ONDEMAND
+# CONSERVATIVE
+# INTERACTIVE
+# WHEATLEY
+# LAGFREE
+# INTELLIDEMAND
+# DANCEDANCE
+# BADASS
+# SCARY
+# LULZACTIVE
+
+DEFAULT_GOVERNOR=BADASS
+
+#...And the following schedulers
+# SIO
+# NOOP
+# DEADLINE
+# ROW
+
+DEFAULT_SCHEDULER=SIO
+
+FLASH_BOOT='/dev/block/mmcblk0p22'
+
+PHONE='HTC Rezound'
+
+DATE=$(date +%Y-%m-%d)
+
+# ----
+
+N_CORES=8
+VERNUMR=Kitten-Kernel-v1.0
+VERSION=$NAME$VERNUMR
+
+# ----
+
+BANNER=`cat <<EOF
+ui_print("Kitten-Kernel");
+ui_print("for");
+ui_print("$PHONE");
+ui_print("$VERSION");
+EOF`
