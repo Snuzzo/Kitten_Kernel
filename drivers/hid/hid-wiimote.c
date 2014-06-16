@@ -291,13 +291,13 @@ static void wiimote_input_close(struct input_dev *dev)
 static void handler_keys(struct wiimote_data *wdata, const __u8 *payload)
 {
 	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_LEFT],
-							!!(payload[0] & 0x01));
-	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_RIGHT],
-							!!(payload[0] & 0x02));
-	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_DOWN],
-							!!(payload[0] & 0x04));
-	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_UP],
 							!!(payload[0] & 0x08));
+	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_RIGHT],
+							!!(payload[0] & 0x04));
+	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_DOWN],
+							!!(payload[0] & 0x01));
+	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_UP],
+							!!(payload[0] & 0x02));
 	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_PLUS],
 							!!(payload[0] & 0x10));
 	input_report_key(wdata->input, wiiproto_keymap[WIIPROTO_KEY_TWO],
