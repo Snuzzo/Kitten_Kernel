@@ -50,6 +50,8 @@
 #include <linux/ion.h>
 #include <mach/ion.h>
 
+#include <linux/persistent_ram.h>
+
 #ifdef CONFIG_ANDROID_PMEM
 #include <linux/android_pmem.h>
 #endif
@@ -344,10 +346,6 @@ static void mhl_sii9234_1v2_power(bool enable);
 } while (0)
 
 int __init vigor_init_panel(struct resource *res, size_t size);
-
-#ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_2_PHASE
-int set_two_phase_freq(int cpufreq);
-#endif
 
 #ifdef CONFIG_MMC_MSM_SDC2_SUPPORT
 static void (*sdc2_status_notify_cb)(int card_present, void *dev_id);
@@ -3295,6 +3293,23 @@ static struct platform_device android_pmem_smipool_device = {
         .dev = { .platform_data = &android_pmem_smipool_pdata },
 };
 
+static struct platform_device ram_console_device = {
+	.name		= "ram_console",
+	.id		= -1,
+};
+
+struct persistent_ram_descriptor ram_console_desc = {
+	.name = "ram_console",
+	.size = MSM_RAM_CONSOLE_SIZE,
+};
+
+struct persistent_ram ram_console_ram = {
+	.start = MSM_RAM_CONSOLE_BASE,
+	.size = MSM_RAM_CONSOLE_SIZE,
+	.num_descs = 1,
+	.descs = &ram_console_desc,
+};
+
 static void __init msm8x60_allocate_memory_regions(void)
 {
 		void *addr;
@@ -3306,6 +3321,7 @@ static void __init msm8x60_allocate_memory_regions(void)
         msm_fb_resources[0].end = msm_fb_resources[0].start + size - 1;
         pr_info("allocating %lu bytes at %p (%lx physical) for fb\n",
                 size, addr, __pa(addr));
+	persistent_ram_early_init(&ram_console_ram);
 }
 
 
@@ -4813,21 +4829,6 @@ static struct platform_device *asoc_devices[] __initdata = {
 	&asoc_msm_pcm,
 	&asoc_msm_dai0,
 	&asoc_msm_dai1,
-};
-
-static struct resource ram_console_resources[] = {
-	{
-		.start	= MSM_RAM_CONSOLE_BASE,
-		.end	= MSM_RAM_CONSOLE_BASE + MSM_RAM_CONSOLE_SIZE - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-};
-
-static struct platform_device ram_console_device = {
-	.name		= "ram_console",
-	.id		= -1,
-	.num_resources	= ARRAY_SIZE(ram_console_resources),
-	.resource	= ram_console_resources,
 };
 
 /*
@@ -7879,10 +7880,6 @@ static void __init msm8x60_init(struct msm_board_data *board_data)
 
 #ifdef CONFIG_PERFLOCK
 	perflock_init(&vigor_perflock_data);
-#endif
-
-#ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_2_PHASE
-	set_two_phase_freq(1134000);
 #endif
 
 	msm8x60_init_tlmm();

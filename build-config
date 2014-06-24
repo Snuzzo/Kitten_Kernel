@@ -24,8 +24,8 @@ DATE=$(date +%Y-%m-%d)
 # ----
 
 N_CORES=8
-VERNUMR=Kitten-Kernel-v2.0-
-VERSION=$VERNUMR$DATE
+VERNUMR=Kitten-Kernel-v2.0
+VERSION=$VERNUMR
 
 # ----
 

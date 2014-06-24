@@ -15,7 +15,7 @@ MAKE=$TOOLS_DIR/make.sh
 
 # -----------------------
 
-ZIP=$TARGET_DIR/$VERSION.zip
+ZIP=$TARGET_DIR/$VERSION-$DATE.zip
 SHA1=$TOOLS_DIR/sha1.sh
 UPDATE_ROOT=$LOCAL_BUILD_DIR/update
 KEYS=$LOCAL_BUILD_DIR/keys
