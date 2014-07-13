@@ -892,8 +892,8 @@ config SECURE_TOUCH
        depends on TOUCHSCREEN_ATMEL_MXT
        help
          Say Y here to enable Secure Touch support in the Atmel MXT
-       driver.
+         driver.
 
-       If unsure, say N.
+         If unsure, say N.
 
 endif
