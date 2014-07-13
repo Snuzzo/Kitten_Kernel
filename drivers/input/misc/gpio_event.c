@@ -21,14 +21,6 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-#ifdef CONFIG_TOUCHSCREEN_ATMEL_SWEEP2WAKE
-#include <linux/atmel_qt602240.h>
-#endif
-
-#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-#include <linux/cy8c_tma_ts.h>
-#endif
-
 struct gpio_event {
 	struct gpio_event_input_devs *input_devs;
 	const struct gpio_event_platform_data *info;
@@ -50,7 +42,7 @@ static int gpio_input_event(
 		if (ip->input_devs->dev[devnr] == dev)
 			break;
 	if (devnr == ip->input_devs->count) {
-		KEY_LOGE("KEY_ERR: %s: unknown device %p\n", __func__, dev);
+		pr_err("gpio_input_event: unknown device %p\n", dev);
 		return -EIO;
 	}
 
@@ -77,7 +69,7 @@ static int gpio_event_call_all_func(struct gpio_event *ip, int func)
 		for (i = 0; i < ip->info->info_count; i++, ii++) {
 			if ((*ii)->func == NULL) {
 				ret = -ENODEV;
-				KEY_LOGE("KEY_ERR: gpio_event_probe: Incomplete pdata, "
+				pr_err("gpio_event_probe: Incomplete pdata, "
 					"no function\n");
 				goto err_no_func;
 			}
@@ -86,7 +78,7 @@ static int gpio_event_call_all_func(struct gpio_event *ip, int func)
 			ret = (*ii)->func(ip->input_devs, *ii, &ip->state[i],
 					  func);
 			if (ret) {
-				KEY_LOGE("KEY_ERR: gpio_event_probe: function failed\n");
+				pr_err("gpio_event_probe: function failed\n");
 				goto err_func_failed;
 			}
 		}
@@ -138,12 +130,12 @@ static int gpio_event_probe(struct platform_device *pdev)
 
 	event_info = pdev->dev.platform_data;
 	if (event_info == NULL) {
-		KEY_LOGE("KEY_ERR: %s: No pdata\n", __func__);
+		pr_err("gpio_event_probe: No pdata\n");
 		return -ENODEV;
 	}
 	if ((!event_info->name && !event_info->names[0]) ||
 	    !event_info->info || !event_info->info_count) {
-		KEY_LOGE("KEY_ERR: %s: Incomplete pdata\n", __func__);
+		pr_err("gpio_event_probe: Incomplete pdata\n");
 		return -ENODEV;
 	}
 	if (!event_info->name)
@@ -155,7 +147,7 @@ static int gpio_event_probe(struct platform_device *pdev)
 		     sizeof(ip->input_devs->dev[0]) * dev_count, GFP_KERNEL);
 	if (ip == NULL) {
 		err = -ENOMEM;
-		KEY_LOGE("KEY_ERR: %s: Failed to allocate private data\n", __func__);
+		pr_err("gpio_event_probe: Failed to allocate private data\n");
 		goto err_kp_alloc_failed;
 	}
 	ip->input_devs = (void*)&ip->state[event_info->info_count];
@@ -165,8 +157,8 @@ static int gpio_event_probe(struct platform_device *pdev)
 		struct input_dev *input_dev = input_allocate_device();
 		if (input_dev == NULL) {
 			err = -ENOMEM;
-			KEY_LOGE("KEY_ERR: %s: "
-				"Failed to allocate input device\n", __func__);
+			pr_err("gpio_event_probe: "
+				"Failed to allocate input device\n");
 			goto err_input_dev_alloc_failed;
 		}
 		input_set_drvdata(input_dev, ip);
@@ -174,23 +166,6 @@ static int gpio_event_probe(struct platform_device *pdev)
 					event_info->name : event_info->names[i];
 		input_dev->event = gpio_input_event;
 		ip->input_devs->dev[i] = input_dev;
-#ifdef CONFIG_TOUCHSCREEN_ATMEL_SWEEP2WAKE
-#if defined (CONFIG_MACH_SHOOTER)
-		if (!strcmp(input_dev->name, "shooter-keypad")) {
-#endif
-#if defined (CONFIG_MACH_SHOOTER_U)
-		if (!strcmp(input_dev->name, "shooteru-keypad")) {
-#endif
-			sweep2wake_setdev(input_dev);
-			printk(KERN_INFO "[SWEEP2WAKE]: set device %s\n", input_dev->name);
-		}
-#endif
-#ifdef CONFIG_TOUCHSCREEN_CYPRESS_SWEEP2WAKE
-		if (!strcmp(input_dev->name, "pyramid-keypad")) {
-			sweep2wake_setdev(input_dev);
-			printk(KERN_INFO "[sweep2wake]: set device %s\n", input_dev->name);
-		}
-#endif
 	}
 	ip->input_devs->count = dev_count;
 	ip->info = event_info;
@@ -211,8 +186,8 @@ static int gpio_event_probe(struct platform_device *pdev)
 	for (i = 0; i < dev_count; i++) {
 		err = input_register_device(ip->input_devs->dev[i]);
 		if (err) {
-			KEY_LOGE("KEY_ERR: %s: Unable to register %s "
-				"input device\n", __func__, ip->input_devs->dev[i]->name);
+			pr_err("gpio_event_probe: Unable to register %s "
+				"input device\n", ip->input_devs->dev[i]->name);
 			goto err_input_register_device_failed;
 		}
 		registered++;
