@@ -254,7 +254,18 @@ static struct i2c_driver max11801_ts_driver = {
 	.remove		= __devexit_p(max11801_ts_remove),
 };
 
-module_i2c_driver(max11801_ts_driver);
+static int __init max11801_ts_init(void)
+{
+	return i2c_add_driver(&max11801_ts_driver);
+}
+
+static void __exit max11801_ts_exit(void)
+{
+	i2c_del_driver(&max11801_ts_driver);
+}
+
+module_init(max11801_ts_init);
+module_exit(max11801_ts_exit);
 
 MODULE_AUTHOR("Zhang Jiejing <jiejing.zhang@freescale.com>");
 MODULE_DESCRIPTION("Touchscreen driver for MAXI MAX11801 controller");

@@ -121,7 +121,17 @@ static struct i2c_driver ad714x_i2c_driver = {
 	.id_table = ad714x_id,
 };
 
-module_i2c_driver(ad714x_i2c_driver);
+static __init int ad714x_i2c_init(void)
+{
+	return i2c_add_driver(&ad714x_i2c_driver);
+}
+module_init(ad714x_i2c_init);
+
+static __exit void ad714x_i2c_exit(void)
+{
+	i2c_del_driver(&ad714x_i2c_driver);
+}
+module_exit(ad714x_i2c_exit);
 
 MODULE_DESCRIPTION("Analog Devices AD714X Capacitance Touch Sensor I2C Bus Driver");
 MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");

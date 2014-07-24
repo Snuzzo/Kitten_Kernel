@@ -754,7 +754,17 @@ static struct i2c_driver adp5589_driver = {
 	.id_table = adp5589_id,
 };
 
-module_i2c_driver(adp5589_driver);
+static int __init adp5589_init(void)
+{
+	return i2c_add_driver(&adp5589_driver);
+}
+module_init(adp5589_init);
+
+static void __exit adp5589_exit(void)
+{
+	i2c_del_driver(&adp5589_driver);
+}
+module_exit(adp5589_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");

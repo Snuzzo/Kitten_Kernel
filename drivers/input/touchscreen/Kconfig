@@ -887,4 +887,13 @@ config TOUCHSCREEN_HIMAX_SH
 	    Haiping Qin <haiping_qin@htc.com>
 	    Allen Xu <allen_xu@htc.com>
 
+config SECURE_TOUCH
+       bool "Secure Touch"
+       depends on TOUCHSCREEN_ATMEL_MXT
+       help
+         Say Y here to enable Secure Touch support in the Atmel MXT
+         driver.
+
+         If unsure, say N.
+
 endif
