@@ -78,6 +78,7 @@ config ARCH_MSM8X60
 	select MSM_NATIVE_RESTART
 	select CPU_HAS_L2_PMU
 	select MSM_SPM_V1
+	select HAS_MACH_MEMUTILS
 
 config ARCH_MSM8X60_LTE
 	bool "MSM8X60_LTE"
@@ -2421,4 +2422,11 @@ config HTC_ACCESSORY_ONEWIRE
         default n
         help
           Provides support of HTC one wire protocol driver.
+
+config HAS_MACH_MEMUTILS
+	default n
+	bool "Motorola MSM memcpy enhancements"
+	help
+	Faster memcpy performance for Krait
+
 endif
